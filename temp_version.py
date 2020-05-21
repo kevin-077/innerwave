@@ -110,7 +110,7 @@ c2=(Hp/H)
 dhp=(dHp/H)
 hp=(Hp/H)
 nm_2=(Nm*Nm*H)/9.81
-a=A/H
+aaa=A/H
 
 ###积分计算 gama
 def f(x):
@@ -195,12 +195,12 @@ x4 =float(-H*0.09)
 d1 = math.atan(2*Hp/dHp)
 k1 = -Nm**2*dHp/4/9.81
 c1 = 2*dHp*Hp/(dHp**2+4*Hp**2)
-s=float(x[0]) 
+ss=float(x[0]) 
 def fun2(x):
     a1 = 2*dHp*(Hp+x)/(dHp**2+4*(Hp+x)**2)
     b1 = math.atan(2*(Hp+x)/dHp)
       
-    return s*k1*(a1-c1+b1-d1) 
+    return ss*k1*(a1-c1+b1-d1) 
 y1=fun2(x3)
 y2=fun2(x4)-y1
 
@@ -313,6 +313,7 @@ print("d1= ",d1,file=data)
 print("A= ",A,file=data)
 print("c0= ",c0,file=data)
 data.close()
+
 f = open("E:/Desktop/run02.gfs","r+")   
 a=''
 lines = f.readlines() 
@@ -321,7 +322,7 @@ def replace(i,c):
     b=re.sub(r"\d+\.\d+",c,lines[i])
     lines[i]=b
     return lines[i]
-bb=replace(24,c0)
+bb=replace(24,cccc0)
 cc=replace(25,c1)
 dd=replace(26,dhp)
 ee=replace(27,l)
@@ -340,7 +341,7 @@ lines[26]=bb
 d='static double nm_2 ='+str(nm_2)
 bb=re.sub(r"static double nm_2 = (\d+\.\d+)", d, lines[27])
 lines[27]=bb
-d='static double hh  = '+str(hh)
+d='static double hh  = '+str(hh1)
 bb=re.sub(r"static double hh  = -(\d+\.\d+)", d, lines[28])
 lines[28]=bb
 
@@ -350,12 +351,28 @@ lines[58]=bb
 d='0.09-a*sech(x/l)*sech(x/l)*'+str(w_bound_2)
 bb=re.sub(r"0\.99-a\*sech\(x/l\)\*sech\(x/l\)\*(\d+\.\d+)", d, lines[58])
 lines[58]=bb
-print(lines[58])  
+d='nm_2*dhp/4*'+str(ss)
+bb=re.sub(r"nm_2\*dhp\/4\*(\d+)",d,lines[58])
+lines[58]=bb
+d='-atan('+str(-c1)
+bb=re.sub(r"-atan\((\d+)",d,lines[58])
+lines[58]=bb
+d=')-'+str(d1)
+bb=re.sub(r"\)-(\d+\.\d+)",d,lines[58])
+lines[58]=bb
+d='))-'+str(y1)
+bb=re.sub(r"\)\)-(\d+\.\d+)",d,lines[58])
+lines[58]=bb
+d=')/'+str(y2)
+bb=re.sub(r"\)/(\d+\.\d+)",d,lines[58])
+lines[58]=bb
+
 for line in lines:
     a+=line
 f.close()
 data=open("E:/Desktop/run03.gfs",'w+') 
 print(a,file=data)
+
 
 
 
