@@ -350,7 +350,7 @@ lines[58]=bb
 d='0.09-a*sech(x/l)*sech(x/l)*'+str(w_bound_2)
 bb=re.sub(r"0\.99-a\*sech\(x/l\)\*sech\(x/l\)\*(\d+\.\d+)", d, lines[58])
 lines[58]=bb
-   
+print(lines[58])  
 for line in lines:
     a+=line
 f.close()
