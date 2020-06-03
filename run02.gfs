@@ -1,0 +1,170 @@
+6 5 GfsSimulation GfsBox GfsGEdge {x=-4.5 y=-0.5} {
+GfsTime { end = 100  }
+GfsRefine 7
+VariableTracer {} T
+VariableTracer {} T1
+AdaptVorticity { istep = 1 } { maxlevel = (x<-9.8? 4: 7) cmax=2e-2 }
+AdaptGradient  { istep = 1 } { maxlevel = 7  cmax=1e-2 } T
+AdaptGradient  { istep = 1 } { maxlevel = 7  cmax=1e-2 } T1
+MetricStretch {} { sx = 2 }
+
+# G = 9.8 m/s2
+# Lref = 300 m
+# Uref = 1.5 m/s
+# Tref = 200 s
+# Gref = 3/400
+
+Global {    
+          double sech(double mm){
+                        return  2./(exp(mm)+exp(-mm));
+          }
+          double sinh(double nn){
+                        return  (exp(nn)-exp(-nn))/2.;
+          }
+          static double pi = 3.1415926;    static double cf = 0.7404;
+          static double c0 = 1.0773;          
+          static double c1 = 0.058333;     static double c2 = 0.116667;
+          static double dhp= 0.116667;     static double hp = 0.116667;       
+          static double l  = 0.46459;     static double nm_2 = 0.0275229;        
+          static double a  = 0.12667;         static double hh  = -2.612;
+          double zz ( double x,double z){
+          double z1 = 0.;   double z2 = -1;     float z3 = (z1+z2)/2;
+          double k  = 1.0/a/sech(x/l)/sech(x/l); 
+          double b  = -z/a/sech(x/l)/sech(x/l);
+          double w = sqrt(1+pow((z3+c2)/c1,2))* sin((atan((z3+c2)/c1)-atan(c2/c1))/hh*pi)/c0;
+	  double d =abs(z3*k-w+b)/sqrt(1+k*k);
+          double i = 0;
+          for(i=0;i<=20;i=i+1){
+    
+                    if ((k*z3+b) < w ){
+                       z2 = z3; z3 =(z1+z2)/2;
+	            }
+                    else{
+                       z1 = z3; z3 =(z1+z2)/2;
+	            }
+                   w = sqrt(1+pow((z3+c2)/c1,2))* sin((atan((z3+c2)/c1)-atan(c2/c1))/hh*pi)/c0;
+                   d = abs(z3*k-w+b)/sqrt(1+k*k);
+          }
+          return z3;
+          }
+}
+          
+Init { start = 0 } { 
+
+U = -a*cf*sech(x/l)*sech(x/l)*sin((atan((y+c2)/c1)-atan(c2/c1))/hh*pi)/c0*(c2 + y)/(c1*c1*sqrt(1+pow((y+c2)/c1,2)))-a*cf*sech(x/l)*sech(x/l)/c0*(pi*cos((pi*(atan((c2 + y)/c1) - atan(c2/c1)))/hh))/(c1*hh*sqrt(1+pow((y+c2)/c1,2)))-0.7404
+
+
+V = a*cf*sqrt(1+pow((y+c2)/c1,2))* sin((atan((y+c2)/c1)-atan(c2/c1))/hh*pi)/c0*(-2)/l*sinh(x/l)*sech(x/l)*sech(x/l)*sech(x/l)  
+
+T = ( (y>=-0.01-a*sech(x/l)*sech(x/l)*0.0856)? 0 :( (y<=-0.99-a*sech(x/l)*sech(x/l)*0.0126)? 1 :(( -nm_2*dhp/4*1000*(2*dhp*(hp+zz(x,y))/(dhp*dhp+4*(hp+zz(x,y))*(hp+zz(x,y)))+atan(2*(hp+zz(x,y))/dhp)-atan(2)-0.4))-0.0127)/2.458 ))
+
+T1 = -zz(x,y)
+
+}
+Source {} V -1308*0.00247*T
+GfsPhysicalParams {   alpha = 1./(0.00247*T+1.)  }
+SourceViscosity  {} 1/600000000000.0
+OutputTime { istep = 10 } stdout
+OutputProjectionStats { istep = 10 } stdout
+OutputScalarStats { istep = 10 } stdout {v = Vorticity}
+#OutputPPM { istep = 2 } vorticity.ppm {
+#    min = -1 max = 1 v = Vorticity }
+OutputPPM { step = 0.1 } { ppm2mpeg > run02.mpg } {
+    min = 0 max = 1 v = T }
+OutputTiming { start = end } stdout
+OutputSimulation { step = 1 } run02-%3.1f.gfs
+OutputLocation { step = 1 } euler-%3.1f.dat positionXYZ
+
+}
+
+GfsBox { 
+         left  = Boundary  {  
+           BcNeumann  U  0
+           
+           
+       }
+         top    = Boundary  {  
+           BcDirichlet V 0    }
+         bottom = Boundary  {  
+           BcDirichlet V 0    }
+       }
+
+GfsBox { 
+         top    = Boundary  {  
+           BcDirichlet V 0    }
+         bottom = Boundary  {  
+           BcDirichlet V 0    }
+       }
+GfsBox { 
+         top    = Boundary  {  
+           BcDirichlet V 0    }
+         bottom = Boundary  {  
+           BcDirichlet V 0    }
+       }
+GfsBox { 
+         top    = Boundary  {  
+           BcDirichlet V 0    }
+         bottom = Boundary  {  
+           BcDirichlet V 0    }
+       }
+GfsBox { 
+         top    = Boundary  {  
+           BcDirichlet V 0    }
+         bottom = Boundary  {  
+           BcDirichlet V 0    }
+       }
+GfsBox {
+         right  = Boundary  {  
+           BcDirichlet U  -0.7404
+           BcDirichlet T   ( (y>=-0.01)? 0 :( (y<=-0.99)? 1 :(( -nm_2*dhp/4*1000*(2*dhp*(hp+y)/(dhp*dhp+4*(hp+y)*(hp+y))+atan(2*(hp+y)/dhp)-atan(2)-0.4))-0.0127)/2.458 ))
+           BcDirichlet T1  -zz(x,y)
+
+       }
+         top    = Boundary  {  
+           BcDirichlet V 0    }
+         bottom = Boundary  {  
+           BcDirichlet V 0    }
+       }
+
+1  2  right
+2  3  right
+3  4  right
+4  5  right
+5  6  right
+
+
+
+
+
+
+ 
+
+
+ 
+
+
+
+
+ 
+
+
+ 
+
+  
+
+
+
+
+
+ 
+
+
+ 
+
+
+
+
+ 
+
+
+ 
