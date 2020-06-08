@@ -1,21 +1,22 @@
-os=__import__('os')
-csv=__import__('csv')
-math=__import__('math')
-np=__import__('numpy')
-plt=__import__('matplotlib.pyplot')
-linalg=__import__('scipy.linalg')
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+import csv,os
+import math 
+import numpy as np
+import matplotlib.pyplot as plt
+import scipy.linalg as linalg
 from scipy.optimize import curve_fit
 from scipy.optimize import fminbound
 from scipy import integrate
 from scipy.interpolate import griddata
-json=__import__('json')
+import json
 from scipy import interpolate
-itertools=__import__('itertools')
-re=__import__('re')
+import itertools
+import re
 from tkinter import *
 import tkinter as tk
-from PIL import ImageTk
-from PIL import Image
+from PIL import ImageTk, Image
+
 sh=Tk() #创建Tk对象
 sha=StringVar()
 shb=StringVar()
@@ -25,7 +26,7 @@ she=StringVar()
 sh.title("内波振幅反演程序") #设置窗口标题
 sh.geometry("800x600") #设置窗口尺寸
 canvas = tk.Canvas(sh, width=1020,height=640,bd=0, highlightthickness=0)
-imgpath = 'E:/Desktop/1.gif'
+imgpath = '/Users/Kev/Desktop/git/innerwave/1.gif'
 img = Image.open(imgpath)
 photo = ImageTk.PhotoImage(img)
 canvas.create_image(600,400,image=photo)
@@ -74,11 +75,13 @@ canvas.create_window(320, 100, width=100, height=20,
                                        window=l1)   
 
 #指定包管理器放置组件
-def printout():
-    EditText.insert(1.0,ss1())
-    return ss1
+def rungts():
+    main='/Users/Kev/Desktop/git/innerwave/run03.gfs'
+    f=os.popen(main)
+  
+
 def ss1():  
-    file='D:/new/data.json'
+    file='/Users/Kev/Desktop/git/innerwave/data.json'
     with open(file,'r') as oj:
         c=json.load(oj)
     c000=c.get('c000'); ct1=c.get('ct1'); ct2=c.get('ct2');ct3=c.get('ct3');cs1=c.get('cs1'); cs2=c.get('cs2'); cp1=c.get('cp1'); cp2=c.get('cp2'); cp3=c.get('cp3'); ctp=c.get('ctp'); ct3p=c.get('ct3p'); ctp2=c.get('ctp2'); ct2p2=c.get('ct2p2'); ctp3=c.get('ctp3'); cst=c.get('cst'); cst2=c.get('cst2'); cstp=c.get('cstp'); cs2tp=c.get('cs2tp'); cs2p2=c.get('cs2p2'); g=c.get('g');
@@ -95,7 +98,7 @@ def ss1():
     x=[] #密度
     s=[] #盐度
     t=[] #温度
-    with open('D:/new/2.csv',encoding="utf-8") as f:
+    with open('/Users/Kev/Desktop/git/innerwave/2.csv',encoding="utf-8") as f:
         reader = csv.reader(f)
         header_row = next(reader)
         datas = []
@@ -216,26 +219,7 @@ def ss1():
     else:
         L=math.sqrt(ll)
     l=L/H
-    
-    ###画出归一化本征函数
-    
-    # figure;
-    # set(gca,'ticklength',[0 0]);
-    # set(gca,'xtick',[]);
-    # set(gca,'ytick',[]);
-    # hold on;
-    # AdsorptionAxes = gca;
-    # AdAxesEdit = axes('Position',get(AdsorptionAxes,'Position'),'XAxisLocation','top','YAxisLocation','left');
-    # set(AdAxesEdit,'XTick',[],'YTick',[]);
-    # hold on;
-    # w_C0 = w/c0;
-    # plot(w_C0,x,'k','LineWidth',1.0);
-    # annotation('arrow',[0.1305 0.1305],[0.2 0]);
-    # annotation('arrow',[0.8 1],[0.925 0.925]);
-    # % hold on;
-    # % data = load('LHYPHI.txt');
-    # % plot(data(:,2)./10.4424,data(:,1)./300,'r')
-    
+
     ##边界归一化本征值
     w_bound_1= math.sqrt(((-0.01+c2)/c1)**2+1)*math.sin((math.atan((-0.01+c2)/c1)-math.atan(c2/c1))/h1*c1*pi)/c0
     w_bound_2= math.sqrt(((-0.99+c2)/c1)**2+1)*math.sin((math.atan((-0.99+c2)/c1)-math.atan(c2/c1))/h1*c1*pi)/c0
@@ -257,7 +241,7 @@ def ss1():
     y1=fun2(x3)
     y2=fun2(x4)-y1
     
-    f1 = open('D:/new/42.txt','r')  #设置文件对象
+    f1 = open('/Users/Kev/Desktop/git/innerwave/42.txt','r')  #设置文件对象
     lines1 = f1.readlines()
     x5=[]
     y5=[]
@@ -350,28 +334,29 @@ def ss1():
     # print("d1= ",d1)
     # print("A= ",A)
     
-    data=open("D:/new/output.txt",'w+') 
-    print("\n输出结果如下： ",file=data)
-    print("Nm= ",popt[0],file=data)
-    print("dHp= ",popt[1],file=data)
-    print("Hp= ",-popt[2],file=data)
-    print("c1= ",c1,file=data)
-    print("c2= ",c2,file=data)
-    print("cf= ",cf,file=data)
-    print("w_bound_1= ",w_bound_1,file=data)
-    print("w_bound_2= ",w_bound_2,file=data)
-    print("y1= ",fun2(x3),file=data)
-    print("y2= ",fun2(x4)-fun2(x3),file=data)
-    print("d1= ",d1,file=data)
-    print("A= ",A,file=data)
-    print("c0= ",cccc0,file=data)
-    data.close()
-    dataa= open('D:/new/output.txt','r')  #设置文件对象
+    
+    # print("输出结果如下:",file=data)
+    with open('/Users/Kev/Desktop/git/innerwave/output.txt','w') as f: # 'a'表示append,即在原来文件内容后继续写数据（不清楚原有数据）
+        f.write("Nm= "+str(popt[0])+'\r\n') 
+        f.write("dHp= "+str(popt[1])+'\r\n')
+        f.write("Hp= "+str(-popt[2])+'\r\n')
+        f.write("c1= "+str(c1)+'\r\n')
+        f.write("c2= "+str(c2)+'\r\n')
+        f.write("cf= "+str(cf)+'\r\n')
+        f.write("w_bound_1= "+str(w_bound_1)+'\r\n')
+        f.write("w_bound_2= "+str(w_bound_2)+'\r\n')
+        f.write("y1= "+str(fun2(x3))+'\r\n')
+        f.write("y2= "+str(fun2(x4)-fun2(x3))+'\r\n')
+        f.write("d1= "+str(d1)+'\r\n')
+        f.write("A= "+str(A)+'\r\n')
+        f.write("c0= "+str(cccc0)+'\r\n')
+    f.close()
+    dataa= open('/Users/Kev/Desktop/git/innerwave/output.txt','r')  #设置文件对象
     lines11 = dataa.readlines()
     dataa.close()
     Tref=float(Lref)/float(Uref)
     Gref=float(Uref)*float(Uref)/float(Lref)
-    f = open("E:/Desktop/run02.gfs","r+")   
+    f = open("/Users/Kev/Desktop/git/innerwave/run02.gfs","r+")   
     a=''
     lines = f.readlines() 
     def replace(i,c):
@@ -457,18 +442,15 @@ def ss1():
     for line in lines:
         a+=line
     f.close()
-    data=open("E:/Desktop/run03.gfs",'w+') 
-    print(a,file=data)
-menubar = Menu(sh)
-def printhelp():
-    EditText.insert(1.0,"将文件放到D盘new文件夹下")
-
-EditText = tk.Text(sh,width=20,height=10)
-EditText.pack()
-menubar.add_command(label='help',
-                        command=printhelp)
-sh.config(menu=menubar)
-l1=Button(sh,text="确定",command=ss1)
+    with open('/Users/Kev/Desktop/git/innerwave/run03.gfs','w') as f: # 'a'表示append,即在原来文件内容后继续写数据（不清楚原有数据）
+        f.write(a)
+    f.close()
+ 
+lll1=Button(sh,text="确定",command=ss1)
 canvas.create_window(370, 360, width=100, height=20,
-                                       window=l1)
+                                       window=lll1)
+ll1=Button(sh,text="运行GFS",command=rungts)
+canvas.create_window(370, 400, width=100, height=20,
+                                       window=ll1)  
+
 sh.mainloop()
